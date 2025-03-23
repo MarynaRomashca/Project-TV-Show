@@ -1,3 +1,31 @@
-#root {
-  color: red;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  padding: 20px;
 }
+
+#root {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* space between columns */
+  gap: 20px;
+  padding: 20px;
+}
+
+.episode-card {
+  flex: 0 0 calc(33.33% - 20px); /* 3 per row with spacing */
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+
+
+
+
+
+
+
+
