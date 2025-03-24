@@ -20,6 +20,15 @@ body {
   padding: 16px;
   box-sizing: border-box;
 }
+footer p {
+  text-align: center;
+  
+}
+footer p a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
 
 
 
