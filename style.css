@@ -20,6 +20,11 @@ body {
   padding: 16px;
   box-sizing: border-box;
 }
+
+#search-message {
+  color: gray;
+}
+
 footer p {
   text-align: center;
   
