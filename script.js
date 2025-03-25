@@ -1,48 +1,58 @@
-
-
-
-
 //You can edit ALL of the code here
 function setup() {
   const allEpisodes = getAllEpisodes();
+  state.episodes = allEpisodes;
   makePageForEpisodes(allEpisodes);
 }
+const state = {
+  episodes: [],
+  searchTerm: "",
+};
+const rootElem = document.getElementById("root");
+const input = document.querySelector("input");
+const searchMessage = document.getElementById("search-message");
 
 function makePageForEpisodes(episodeList) {
-  const rootElem = document.getElementById("root");
-  //rootElem.textContent = `Got ${episodeList.length} episode(s)`;
+  rootElem.innerHTML = "";
 
   episodeList.forEach((episode) => {
-    
     const card = document.createElement("div");
     card.className = "episode-card";
 
     const episodeName = document.createElement("h3");
-    const episodeCode = document.createElement("p");
     const episodeImage = document.createElement("img");
-    const episodeText = document.createElement("div");
+    const episodeSummary = document.createElement("p");
 
-    episodeName.textContent = episode.name;
-    episodeCode.textContent = `S${String(episode.season).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`; // `S ${0,episode.number} E ${0,episode.season}`; //episode.id;
+    episodeName.textContent = `${episode.name} - S${String(
+      episode.season
+    ).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`;
+
     episodeImage.src = episode.image.medium;
-    episodeText.innerHTML = episode.summary;
+    episodeSummary.innerHTML = episode.summary;
 
-    rootElem.appendChild(episodeName);
-    rootElem.appendChild(episodeCode);
-    rootElem.appendChild(episodeImage);
-    rootElem.appendChild(episodeText);
-
-    card.appendChild(episodeName);
-    card.appendChild(episodeCode);
+    card.appendChild(episodeName); // appended name, image and summary to the card
     card.appendChild(episodeImage);
-    card.appendChild(episodeText);
+    card.appendChild(episodeSummary);
 
     rootElem.appendChild(card);
   });
 }
 
+input.addEventListener("keyup", function () {
+  state.searchTerm = input.value.toLowerCase();
+  const filteredEpisodes = state.episodes.filter(function (episode) {
+    return (
+      episode.name.toLowerCase().includes(state.searchTerm) ||
+      episode.summary.toLowerCase().includes(state.searchTerm)
+    );
+  });
 
+  if (state.searchTerm === "") {
+    searchMessage.textContent = "";
+  } else {
+    searchMessage.textContent = `Displaying ${filteredEpisodes.length}/${state.episodes.length} episodes.`;
+  }
 
-
-
+  makePageForEpisodes(filteredEpisodes);
+});
 window.onload = setup;

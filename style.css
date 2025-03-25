@@ -17,8 +17,56 @@ body {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 16px;
   box-sizing: border-box;
+  text-align: justify;
+  margin: 0;
+  padding: 0;
+  
+}
+
+.episode-card img {
+  display: block;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+  
+}
+.episode-card h3 {
+  box-sizing: border-box;
+  display: block;
+  line-height: 1.6;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 10px;
+  margin: 0;
+}
+.episode-card p {
+  display: block;
+  font-size: 14px;
+  color: gray;
+  text-align: justify;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#search-message {
+  color: gray;
+}
+
+footer p {
+  text-align: center;
+  color: gray;
+  
+}
+footer p a {
+  text-decoration: none;
+  color: gray;
+  cursor: pointer;
 }
 
 
