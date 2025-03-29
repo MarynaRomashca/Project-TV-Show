@@ -71,12 +71,14 @@ function populateEpisodeSelect(episodes) {
 
   episodes.forEach((episode) => {
     let option = document.createElement("option");
+
     option.value = episode.id; // Use episode ID as the value
     option.textContent = `S${String(episode.season).padStart(2, "0")}E${String(
       episode.number
     ).padStart(2, "0")} - ${episode.name}`; // Use episode name as the text for the option
     episodeList.appendChild(option);
   });
+
   episodeList.removeEventListener("change", handleSelect); // clean preview event
   episodeList.addEventListener("change", handleSelect); // listen for a change event, not input
 }
