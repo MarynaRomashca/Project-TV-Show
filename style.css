@@ -12,6 +12,31 @@ body {
   padding: 20px;
 }
 
+#search-input, #select-section {
+  display: inline;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 10px;
+  
+}
+
+#all-episodes-button {
+  background-color: aliceblue;
+  border: 1px solid black;
+  height: 10%;
+  width: 100px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  position: relative;
+  top: 0px;
+  left: -225px;
+  right: 50px
+  
+}
+
+#episodes, #q {
+  padding: 5px;
+}
 .episode-card {
   flex: 0 0 calc(33.33% - 20px); /* 3 per row with spacing */
   background-color: white;
