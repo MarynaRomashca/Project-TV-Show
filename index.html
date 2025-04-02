@@ -9,12 +9,20 @@
   </head>
 
   <body>
+    <div id="header-section">
+    <div id="select-section">
+    <label for="episodes"></label>
+    <select name="episodes" id="episodes"></select>
+    </div>
     <label>
+      <div id = "search-input">
     <input type="search" id="q" name="q" placeholder="Search term" /> 🔍
     </label>
     <span id="search-message"></span>
+    </div>
     <div id="root">
     </div>
+    
   
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
     <script src="episodes.js"></script>

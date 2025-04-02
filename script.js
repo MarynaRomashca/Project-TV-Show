@@ -3,7 +3,9 @@ function setup() {
   const allEpisodes = getAllEpisodes();
   state.episodes = allEpisodes;
   makePageForEpisodes(allEpisodes);
+  populateEpisodeSelect(allEpisodes);
 }
+
 const state = {
   episodes: [],
   searchTerm: "",
@@ -55,4 +57,60 @@ input.addEventListener("keyup", function () {
 
   makePageForEpisodes(filteredEpisodes);
 });
+
+// Populate the select dropdown with episodes
+function populateEpisodeSelect(episodes) {
+  const episodeList = document.getElementById("episodes");
+
+  episodeList.innerHTML = "";
+
+  if (episodes.length === 0) {
+    console.log("No episodes available to populate the select.");
+    return;
+  }
+
+  episodes.forEach((episode) => {
+    let option = document.createElement("option");
+
+    option.value = episode.id; // Use episode ID as the value
+    option.textContent = `S${String(episode.season).padStart(2, "0")}E${String(
+      episode.number
+    ).padStart(2, "0")} - ${episode.name}`; // Use episode name as the text for the option
+    episodeList.appendChild(option);
+  });
+
+  episodeList.removeEventListener("change", handleSelect); // clean preview event
+  episodeList.addEventListener("change", handleSelect); // listen for a change event, not input
+}
+
+function allEpisodesButton() {
+  const allEpButton = document.createElement("button");
+  allEpButton.textContent = "All Episodes";
+  allEpButton.id = "all-episodes-button";
+  allEpButton.addEventListener("click", () => {
+    makePageForEpisodes(state.episodes);
+    allEpButton.remove();
+  });
+  rootElem.appendChild(allEpButton);
+}
+
+// Handle the selection of an episode from the dropdown
+function handleSelect(ev) {
+  let select = ev.target;
+
+  // Find the selected episode by its ID and log the details
+  const selectedEpisode = state.episodes.find(
+    (episode) => episode.id === parseInt(select.value)
+  );
+
+  if (selectedEpisode) {
+    makePageForEpisodes([selectedEpisode]);
+    allEpisodesButton();
+  }
+  allEpButton.addEventListener("click", () => {
+    state.episodes = getAllEpisodes();
+    makePageForEpisodes(state.episodes);
+  });
+}
+
 window.onload = setup;
