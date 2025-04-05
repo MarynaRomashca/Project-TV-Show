@@ -13,6 +13,7 @@ const state = {
 const rootElem = document.getElementById("root");
 const input = document.querySelector("input");
 const searchMessage = document.getElementById("search-message");
+const episodeList = document.getElementById("episodes"); // select element defined globally
 
 function makePageForEpisodes(episodeList) {
   rootElem.innerHTML = "";
@@ -60,7 +61,7 @@ input.addEventListener("keyup", function () {
 
 // Populate the select dropdown with episodes
 function populateEpisodeSelect(episodes) {
-  const episodeList = document.getElementById("episodes");
+ // const episodeList = document.getElementById("episodes");  // moved up to use it globally
 
   episodeList.innerHTML = "";
 
@@ -89,6 +90,7 @@ function allEpisodesButton() {
   allEpButton.id = "all-episodes-button";
   allEpButton.addEventListener("click", () => {
     makePageForEpisodes(state.episodes);
+    episodeList.selectedIndex = 0; // set selected attribute to index 0 when all button is clicked
     allEpButton.remove();
   });
   rootElem.appendChild(allEpButton);
