@@ -1,15 +1,27 @@
 //You can edit ALL of the code here
-function setup() {
-  const allEpisodes = getAllEpisodes();
-  state.episodes = allEpisodes;
-  makePageForEpisodes(allEpisodes);
-  populateEpisodeSelect(allEpisodes);
-}
 
 const state = {
   episodes: [],
   searchTerm: "",
 };
+
+const endpoint = "https://api.tvmaze.com/shows/82/episodes";
+
+const fetchFilms = async () => {
+  const response = await fetch(endpoint);
+  return await response.json();
+
+};
+
+async function setup() {
+  const allEpisodes = await fetchFilms(); // 🔄 заменяем getAllEpisodes()
+  state.episodes = allEpisodes;
+  makePageForEpisodes(allEpisodes);
+  populateEpisodeSelect(allEpisodes);
+}
+
+setup();
+
 const rootElem = document.getElementById("root");
 const input = document.querySelector("input");
 const searchMessage = document.getElementById("search-message");
@@ -107,10 +119,7 @@ function handleSelect(ev) {
     makePageForEpisodes([selectedEpisode]);
     allEpisodesButton();
   }
-  allEpButton.addEventListener("click", () => {
-    state.episodes = getAllEpisodes();
-    makePageForEpisodes(state.episodes);
-  });
+
 }
 
 window.onload = setup;
