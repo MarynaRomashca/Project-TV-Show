@@ -1,36 +1,85 @@
 //You can edit ALL of the code here
 
 const state = {
+  shows: [],
   episodes: [],
   searchTerm: "",
+  cache: {}, // to store feched episodes by show id
 };
 
-const endpoint = "https://api.tvmaze.com/shows/82/episodes";
+const showEndpoint = "https://api.tvmaze.com/shows";
+const episodesEndpoint = (showId) =>
+  `https://api.tvmaze.com/shows/${showId}/episodes`;
 
-const fetchFilms = async () => {
-  const response = await fetch(endpoint);
-  return await response.json();
-
-};
-
-async function setup() {
-  const allEpisodes = await fetchFilms(); // 🔄 заменяем getAllEpisodes()
-  state.episodes = allEpisodes;
-  makePageForEpisodes(allEpisodes);
-  populateEpisodeSelect(allEpisodes);
-}
-
-setup();
-
+const showsList = document.getElementById("shows");
+const episodesList = document.getElementById("episodes"); // select element defined globally
 const rootElem = document.getElementById("root");
 const input = document.querySelector("input");
 const searchMessage = document.getElementById("search-message");
-const episodeList = document.getElementById("episodes"); // select element defined globally
 
-function makePageForEpisodes(episodeList) {
+const fetchShows = async () => {
+  try {
+    const response = await fetch(showEndpoint);
+    if (!response.ok)
+      throw new Error(`HTTP error! Status: ${response.status} `);
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching shows:", error);
+    return [];
+  }
+};
+
+// fetch episodes for a given show
+const fetchEpisodes = async (showId) => {
+  if (state.cache[showId]) return state.cache[showId]; // Use cached data if available
+
+  try {
+    const response = await fetch(episodesEndpoint(showId));
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    const episodes = await response.json();
+    state.cache[showId] = episodes; // Cache the episodes
+    return episodes;
+  } catch (error) {
+    console.error("Error fetching episodes:", error);
+    return [];
+  }
+};
+
+// populate dropdown with shows
+const populateShowsList = (shows) => {
+  showsList.innerHTML =
+    "<option value='' disabled selected>Select a show</option>";
+
+  shows.forEach((show) => {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = show.name;
+    showsList.appendChild(option);
+  });
+};
+
+// Populate the select dropdown with episodes
+const populateEpisodesList = (episodes) => {
+  // const episodeList = document.getElementById("episodes");  // moved up to use it globally
+
+  episodesList.innerHTML =
+    "<option value='' disabled selected>Select an episode</option>";
+
+  episodes.forEach((episode) => {
+    const option = document.createElement("option");
+    option.value = episode.id; // Use episode ID as the value
+    option.textContent = `S${String(episode.season).padStart(2, "0")}E${String(
+      episode.number
+    ).padStart(2, "0")} - ${episode.name}`; // Use episode name as the text for the option
+    episodesList.appendChild(option);
+  });
+};
+
+// to display episodes
+function makePageForEpisodes(episodes) {
   rootElem.innerHTML = "";
 
-  episodeList.forEach((episode) => {
+  episodes.forEach((episode) => {
     const card = document.createElement("div");
     card.className = "episode-card";
 
@@ -53,75 +102,66 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
-input.addEventListener("keyup", function () {
-  state.searchTerm = input.value.toLowerCase();
-  const filteredEpisodes = state.episodes.filter(function (episode) {
-    return (
-      episode.name.toLowerCase().includes(state.searchTerm) ||
-      episode.summary.toLowerCase().includes(state.searchTerm)
-    );
-  });
+const allEpisodesButton = () => {
+  const allEpButton =
+    document.getElementById("all-episodes-button") ||
+    document.createElement("button");
 
-  if (state.searchTerm === "") {
-    searchMessage.textContent = "";
-  } else {
-    searchMessage.textContent = `Displaying ${filteredEpisodes.length}/${state.episodes.length} episodes.`;
+  allEpButton.textContent = "Show all episodes";
+  allEpButton.id = "all-episodes-button";
+  allEpButton.onclick = () => {
+    makePageForEpisodes(state.episodes);
+    episodesList.selectedIndex = 0; // Reset the list to the default
+    input.value = "";
+    searchMessage.textContent = `Displaying ${state.episodes.length}/${state.episodes.length} episodes`;
+  };
+  rootElem.before(allEpButton);
+};
+
+// to handle show selection
+showsList.addEventListener("change", async (event) => {
+  const showId = parseInt(event.target.value);
+  const episodes = await fetchEpisodes(showId);
+
+  state.episodes = episodes;
+  makePageForEpisodes(episodes);
+  populateEpisodesList(episodes);
+  allEpisodesButton();
+
+  searchMessage.textContent = `Displaying ${episodes.length}/${episodes.length} episodes`;
+});
+
+// to handle episode selection
+episodesList.addEventListener("change", (event) => {
+  const episodeId = parseInt(event.target.value);
+  const selectedEpisode = state.episodes.find((ep) => ep.id === episodeId);
+  if (selectedEpisode) {
+    makePageForEpisodes([selectedEpisode]);
   }
+});
 
+// to handle search
+input.addEventListener("input", () => {
+  const searchTerm = input.value.toLowerCase();
+
+  const filteredEpisodes = state.episodes.filter(
+    (episode) =>
+      episode.name.toLowerCase().includes(searchTerm) ||
+      (episode.summary && episode.summary.toLowerCase().includes(searchTerm))
+  );
+
+  searchMessage.textContent = `Displaying ${filteredEpisodes.length}/${state.episodes.length} episodes.`;
   makePageForEpisodes(filteredEpisodes);
 });
 
-// Populate the select dropdown with episodes
-function populateEpisodeSelect(episodes) {
- // const episodeList = document.getElementById("episodes");  // moved up to use it globally
+const setup = async () => {
+  const shows = await fetchShows();
+  state.shows = shows.sort((a, b) => a.name.localeCompare(b.name)); // Sort show alphabetically
 
-  episodeList.innerHTML = "";
+  populateShowsList(state.shows);
 
-  if (episodes.length === 0) {
-    console.log("No episodes available to populate the select.");
-    return;
-  }
-
-  episodes.forEach((episode) => {
-    let option = document.createElement("option");
-
-    option.value = episode.id; // Use episode ID as the value
-    option.textContent = `S${String(episode.season).padStart(2, "0")}E${String(
-      episode.number
-    ).padStart(2, "0")} - ${episode.name}`; // Use episode name as the text for the option
-    episodeList.appendChild(option);
-  });
-
-  episodeList.removeEventListener("change", handleSelect); // clean preview event
-  episodeList.addEventListener("change", handleSelect); // listen for a change event, not input
-}
-
-function allEpisodesButton() {
-  const allEpButton = document.createElement("button");
-  allEpButton.textContent = "All Episodes";
-  allEpButton.id = "all-episodes-button";
-  allEpButton.addEventListener("click", () => {
-    makePageForEpisodes(state.episodes);
-    episodeList.selectedIndex = 0; // set selected attribute to index 0 when all button is clicked
-    allEpButton.remove();
-  });
-  rootElem.appendChild(allEpButton);
-}
-
-// Handle the selection of an episode from the dropdown
-function handleSelect(ev) {
-  let select = ev.target;
-
-  // Find the selected episode by its ID and log the details
-  const selectedEpisode = state.episodes.find(
-    (episode) => episode.id === parseInt(select.value)
-  );
-
-  if (selectedEpisode) {
-    makePageForEpisodes([selectedEpisode]);
-    allEpisodesButton();
-  }
-
-}
+  showsList.selectedIndex = 1;
+  showsList.dispatchEvent(new Event("change"));
+};
 
 window.onload = setup;

@@ -3,6 +3,9 @@ body {
   background-color: #f8f9fa;
   padding: 20px;
 }
+#header-section {
+  text-align: justify;
+}
 
 #root {
   display: flex;
@@ -12,30 +15,24 @@ body {
   padding: 20px;
 }
 
-#search-input, #select-section {
+#search-input,
+#select-show,
+#select-episode {
   display: inline;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-right: 10px;
-  
 }
 
+#shows,
+#episodes,
+#q,
+#search-message,
 #all-episodes-button {
-  background-color: aliceblue;
-  border: 1px solid black;
-  height: 10%;
-  width: 100px;
-  padding: 5px 7px;
-  border-radius: 5px;
-  position: relative;
-  top: 0px;
-  left: -225px;
-  right: 50px
-  
-}
-
-#episodes, #q {
   padding: 5px;
+  margin-bottom: 5px;
+  color: gray;
+  font-size: 14px;
 }
 .episode-card {
   flex: 0 0 calc(33.33% - 20px); /* 3 per row with spacing */
@@ -46,7 +43,6 @@ body {
   text-align: justify;
   margin: 0;
   padding: 0;
-  
 }
 
 .episode-card img {
@@ -57,7 +53,6 @@ body {
   margin-top: 20px;
   margin-bottom: 20px;
   align-items: center;
-  
 }
 .episode-card h3 {
   box-sizing: border-box;
@@ -86,19 +81,9 @@ body {
 footer p {
   text-align: center;
   color: gray;
-  
 }
 footer p a {
   text-decoration: none;
   color: gray;
   cursor: pointer;
 }
-
-
-
-
-
-
-
-
-
