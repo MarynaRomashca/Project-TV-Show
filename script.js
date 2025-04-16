@@ -6,6 +6,7 @@ const state = {
   searchTerm: "",
   cache: {}, // to store feched episodes by show id
 };
+let show 
 
 const showEndpoint = "https://api.tvmaze.com/shows";
 const episodesEndpoint = (showId) =>
@@ -31,6 +32,7 @@ const fetchShows = async () => {
 
 // fetch episodes for a given show
 const fetchEpisodes = async (showId) => {
+  //if (showId === "") return state.cache;
   if (state.cache[showId]) return state.cache[showId]; // Use cached data if available
 
   try {
@@ -47,8 +49,8 @@ const fetchEpisodes = async (showId) => {
 
 // populate dropdown with shows
 const populateShowsList = (shows) => {
-  showsList.innerHTML =
-    "<option value='' disabled selected>Select a show</option>";
+  //showsList.innerHTML =
+    //"<option value='' disabled selected>Select a show</option>";
 
   shows.forEach((show) => {
     const option = document.createElement("option");
@@ -73,6 +75,7 @@ const populateEpisodesList = (episodes) => {
     ).padStart(2, "0")} - ${episode.name}`; // Use episode name as the text for the option
     episodesList.appendChild(option);
   });
+  
 };
 
 // to display episodes
@@ -100,6 +103,7 @@ function makePageForEpisodes(episodes) {
 
     rootElem.appendChild(card);
   });
+  //input.value = ""
 }
 
 const allEpisodesButton = () => {
@@ -121,8 +125,10 @@ const allEpisodesButton = () => {
 // to handle show selection
 showsList.addEventListener("change", async (event) => {
   const showId = parseInt(event.target.value);
+  
+  if (event.target.value==="") return makePageForShows(state.shows);
   const episodes = await fetchEpisodes(showId);
-
+ 
   state.episodes = episodes;
   makePageForEpisodes(episodes);
   populateEpisodesList(episodes);
@@ -137,31 +143,93 @@ episodesList.addEventListener("change", (event) => {
   const selectedEpisode = state.episodes.find((ep) => ep.id === episodeId);
   if (selectedEpisode) {
     makePageForEpisodes([selectedEpisode]);
+    searchMessage.textContent = `Displaying 1/${state.episodes.length} episodes.`;
+    input.value = "";
   }
 });
 
-// to handle search
 input.addEventListener("input", () => {
   const searchTerm = input.value.toLowerCase();
 
-  const filteredEpisodes = state.episodes.filter(
-    (episode) =>
-      episode.name.toLowerCase().includes(searchTerm) ||
-      (episode.summary && episode.summary.toLowerCase().includes(searchTerm))
-  );
+  // "Select all shows"
+  if (showsList.value === "") {
+    const filteredShows = state.shows.filter(
+      (show) =>
+        show.name.toLowerCase().includes(searchTerm) ||
+        (show.summary && show.summary.toLowerCase().includes(searchTerm))
+    );
 
-  searchMessage.textContent = `Displaying ${filteredEpisodes.length}/${state.episodes.length} episodes.`;
-  makePageForEpisodes(filteredEpisodes);
+    makePageForShows(filteredShows);
+    searchMessage.textContent = `Displaying ${filteredShows.length}/${state.shows.length} shows.`;
+    
+  } else {
+    // Select one show
+    const selectedShowId = parseInt(showsList.value);
+    const currentEpisodes = state.cache[selectedShowId] || [];
+
+    const filteredEpisodes = currentEpisodes.filter(
+      (episode) =>
+        episode.name.toLowerCase().includes(searchTerm) ||
+        (episode.summary && episode.summary.toLowerCase().includes(searchTerm))
+    );
+
+    makePageForEpisodes(filteredEpisodes);
+    searchMessage.textContent = `Displaying ${filteredEpisodes.length}/${currentEpisodes.length} episodes.`;
+    episodesList.value = ""
+   
+  }
 });
+
+function makePageForShows(shows) {
+  rootElem.innerHTML = "";
+
+  shows.forEach((show) => {
+    const card = document.createElement("div");
+    card.className = "show-card";
+
+    const showName = document.createElement("h3");
+    const showImage = document.createElement("img");
+    const showSummary = document.createElement("p");
+    const showRating = document.createElement("p");
+    const showGenre = document.createElement("p");
+    const showStatus = document.createElement("p");
+    const showRuntime = document.createElement("p");
+    const wrapper = document.createElement("div");
+    wrapper.className = "wrapper"
+    const extraInfo = document.createElement("div");
+    extraInfo.className = "extraInfo"
+    showName.textContent = `${show.name}`;
+    
+
+    showImage.src = show.image.medium;
+    showSummary.innerHTML = show.summary;
+    showStatus.innerHTML = `Status: ${show.status}`;
+    showGenre.innerHTML = `Genres: ${show.genres}`;
+    showRating.innerHTML = `Rated: ${show.rating.average}`;
+    showRuntime.innerHTML = `Runtime: ${show.runtime}`;
+    
+    card.appendChild(showName); // appended name, image and summary to the card
+    card.appendChild(wrapper);
+    wrapper.appendChild(showImage);
+    wrapper.appendChild(showSummary);
+    wrapper.appendChild(extraInfo);
+    extraInfo.appendChild(showRating);
+    extraInfo.appendChild(showGenre);
+    extraInfo.appendChild(showStatus);
+    extraInfo.appendChild(showRuntime);
+    
+
+    rootElem.appendChild(card);
+  });
+}
 
 const setup = async () => {
   const shows = await fetchShows();
   state.shows = shows.sort((a, b) => a.name.localeCompare(b.name)); // Sort show alphabetically
 
   populateShowsList(state.shows);
+  makePageForShows(state.shows);
 
-  showsList.selectedIndex = 1;
-  showsList.dispatchEvent(new Event("change"));
 };
 
 window.onload = setup;

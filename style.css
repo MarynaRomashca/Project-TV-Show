@@ -87,3 +87,52 @@ footer p a {
   color: gray;
   cursor: pointer;
 }
+
+.wrapper {
+  display: flex;
+  column-gap: 30px;
+
+  background-color: white;
+  border-radius: 10px;
+ 
+  box-sizing: border-box;
+  text-align: justify;
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper p {
+width: 100%;
+}
+
+.extraInfo {
+  width: 30%;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  text-align: justify;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+  padding-top: 30px;
+}
+
+.show-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  text-align: justify;
+  margin: 0;
+  padding: 0;
+}
+
+.show-card h3 {
+  margin-left: 25px;
+}
+
+.show-card img {
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
